@@ -9,17 +9,27 @@ def makeChange(coins, total):
     """
     if total <= 0:
         return 0
-    rem = total
-    coins_count = 0
-    coin_idx = 0
-    sorted_coins = sorted(coins, reverse=True)
-    n = len(coins)
-    while rem > 0:
-        if coin_idx >= n:
-            return -1
-        if rem - sorted_coins[coin_idx] >= 0:
-            rem -= sorted_coins[coin_idx]
-            coins_count += 1
-        else:
-            coin_idx += 1
-    return coins_count
+
+    # Create a list to store the minimum number of coins needed for each amount from 0 to total
+    dp = [float('inf')] * (total + 1)
+
+    # Base case: 0 coins needed to make change for 0
+    dp[0] = 0
+
+    # Iterate through each coin value
+    for coin in coins:
+        for amount in range(coin, total + 1):
+            # Calculate the minimum number of coins needed to make change for the current amount
+            dp[amount] = min(dp[amount], dp[amount - coin] + 1)
+
+    if dp[total] == float('inf'):
+        # If dp[total] is still infinity, it means the total cannot be met by any combination of coins
+        return -1
+    else:
+        return dp[total]
+
+# Example usage:
+coins = [1, 2, 5]
+total = 11
+result = make_change(coins, total)
+print(result)  # Output should be 3 (1 * 5 + 2 * 3)
